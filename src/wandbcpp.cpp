@@ -45,6 +45,7 @@ void wandb::init(const init_args& ia) {
                       {"tags", PyList(ia.tags.begin(), ia.tags.end())}});
   if (!ia.entity.empty()) init_kwargs["entity"] = ia.entity;
   if (!ia.group.empty()) init_kwargs["group"] = ia.group;
+  init_kwargs["reinit"] = true;
   run_ = PyCall(init_, init_kwargs);
 
   log_ = PyObject_GetAttrString(wandb_module_.get(), "log");
@@ -187,6 +188,15 @@ void add_summary(std::vector<PyDictItem>&& summs) {
   preprocessing();
   for (auto&& summ : summs) {
     logging_worker->append_summary(std::forward<PyDictItem>(summ));
+  }
+}
+
+void finish_wandb() {
+  if (wandb::get_mode() == wandb::wandb_mode::disabled) {
+    return;
+  }
+  if (logging_worker) {
+    logging_worker->finish();
   }
 }
 

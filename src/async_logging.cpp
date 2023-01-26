@@ -17,8 +17,11 @@ AsyncLoggingWorker::~AsyncLoggingWorker() {
 
 void AsyncLoggingWorker::initialize_wandb(const wandb::init_args& ia) {
   std::unique_lock lk(init_mtx_);
+  is_initialized_ = false;
   init_args_ = ia;
   cv_do_init_.notify_all();
+  // reinit waits for this
+  cv_buffers_not_empty_.notify_all();
 }
 
 void AsyncLoggingWorker::wait_initialized() {
@@ -52,13 +55,22 @@ void AsyncLoggingWorker::worker() {
                !log_buffer_.empty() ||      //
                !config_buffer_.empty() ||   //
                !summary_buffer_.empty() ||  //
-               !file_path_buffer_.empty();
+               !file_path_buffer_.empty() ||
+               !is_initialized_;
       });
     }
     if (terminal_ && is_buffers_empty()) {
       wandb_->finish();
       delete wandb_;
       return;
+    }
+    // reinit after all data of the previous run is commited
+    if(!is_initialized_ && is_buffers_empty()){
+      std::unique_lock lk(is_initialized_mtx_);
+      wandb_->finish();
+      wandb_->init(init_args_.value());
+      is_initialized_ = true;
+      cv_is_initialized_.notify_all();
     }
     if (!is_log_buffer_empty()) {
       std::queue<object::PyDict> log_buffer_moved_;
