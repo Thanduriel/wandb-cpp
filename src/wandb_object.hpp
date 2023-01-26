@@ -2,6 +2,7 @@
 #define WANDB_OBJECT_HPP_
 #include <string>
 #include <vector>
+#include <optional>
 
 #include "src/np_object.hpp"
 #include "src/py_object.hpp"
