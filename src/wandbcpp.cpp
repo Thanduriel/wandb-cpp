@@ -191,15 +191,6 @@ void add_summary(std::vector<PyDictItem>&& summs) {
   }
 }
 
-void finish_wandb() {
-  if (wandb::get_mode() == wandb::wandb_mode::disabled) {
-    return;
-  }
-  if (logging_worker) {
-    logging_worker->finish();
-  }
-}
-
 void finish() {
   if (wandb::get_mode() == wandb::wandb_mode::disabled) {
     return;

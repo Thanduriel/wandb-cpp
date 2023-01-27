@@ -77,8 +77,6 @@ void add_summary(const std::vector<internal::object::PyDictItem>& summs);
 
 void add_summary(std::vector<internal::object::PyDictItem>&& summs);
 
-void finish_wandb();
-
 void finish();
 
 }  // namespace wandbcpp

@@ -12,7 +12,7 @@ AsyncLoggingWorker::AsyncLoggingWorker()
 AsyncLoggingWorker::~AsyncLoggingWorker() {
   finish();
   logging_worker_thread.join();
-  Py_Finalize();
+//  Py_Finalize();
 }
 
 void AsyncLoggingWorker::initialize_wandb(const wandb::init_args& ia) {
