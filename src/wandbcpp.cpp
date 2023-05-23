@@ -24,16 +24,20 @@ void wandb::init(const init_args& ia) {
     throw std::runtime_error("Error Python is not initialized!");
   }
 
+  wchar_t argv[] = L".";
+  std::array<wchar_t*, 1> dir = {argv};
+  PySys_SetArgv(1, dir.data());
+
   wandb_module_ = PyImport_ImportModule("wandb");
+  if (wandb_module_.is_null()) {
+    PyErr_Print();
+    throw std::runtime_error("Error loading module wandb!");
+  }
   int i = _import_array();
   if (i < 0) {
     throw std::runtime_error("import numpy failed");
   }
 
-  if (wandb_module_.is_null()) {
-    PyErr_Print();
-    throw std::runtime_error("Error loading module wandb!");
-  }
   init_ = PyObject_GetAttrString(wandb_module_.get(), "init");
   if (init_.is_null() || !PyCallable_Check(init_.get())) {
     PyErr_Print();
