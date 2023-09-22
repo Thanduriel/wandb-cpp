@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iterator>
 #include <optional>
+#include <array>
 
 #include "src/async_logging.hpp"
 #define PY_ARRAY_UNIQUE_SYMBOL cool_ARRAY_API
