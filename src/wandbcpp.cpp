@@ -25,10 +25,6 @@ void wandb::init(const init_args& ia) {
     throw std::runtime_error("Error Python is not initialized!");
   }
 
-  wchar_t argv[] = L".";
-  std::array<wchar_t*, 1> dir = {argv};
-  PySys_SetArgv(1, dir.data());
-
   wandb_module_ = PyImport_ImportModule("wandb");
   if (wandb_module_.is_null()) {
     PyErr_Print();
